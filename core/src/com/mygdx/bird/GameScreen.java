@@ -49,6 +49,12 @@ public class GameScreen implements Screen {
     Rectangle part3;
     Rectangle part4;
 
+    Texture part1PipeImage;
+    Texture part2PiepeImage;
+
+    Rectangle part1pipe;
+    Rectangle part2Pipe;
+
 
     public GameScreen(final Bird gam) {
         this.game = gam;
@@ -115,7 +121,7 @@ public class GameScreen implements Screen {
         if(!dead){
             game.batch.draw(birdImage, player.x, player.y);
         }else{
-            game.batch.draw(part1Image,part1.x,part1.y);
+            game.batch.draw(part1Image,part1.x,part1.y,null,null,null,null,null,null,4f);
             game.batch.draw(part2Image,part2.x,part2.y);
             game.batch.draw(part3Image,part3.x,part3.y);
             game.batch.draw(part4Image,part4.x,part4.y);
@@ -205,6 +211,7 @@ public class GameScreen implements Screen {
                 part4.y = player.y;
                 oneTime =false;
             }
+
 
             part1.x -= 1 ; part1.y += 1 ;
             part2.x += 1 ; part2.y += 1 ;
