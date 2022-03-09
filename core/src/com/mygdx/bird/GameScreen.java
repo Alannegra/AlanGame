@@ -28,11 +28,15 @@ public class GameScreen implements Screen {
 
     Array<Rectangle> obstacles;
     Array<Rectangle> brokenobstacles;
+    Array<Rectangle> powerups;
 
     long lastObstacleTime;
     long lastObstacleTime2;
 
     Rectangle player;
+
+
+    Texture powerupImage;
 
     float speedy;
     float gravity;
@@ -107,6 +111,7 @@ public class GameScreen implements Screen {
 
         pipeUpImage = new Texture(Gdx.files.internal("pipe_up.png"));
         pipeDownImage = new Texture(Gdx.files.internal("pipe_down.png"));
+        powerupImage = new Texture(Gdx.files.internal("part1bird.png"));
 
         part1PipeUpImage = new Texture(Gdx.files.internal("brokenpipe1.png"));
         part2PipeUpImage = new Texture(Gdx.files.internal("brokenpipe2.png"));
@@ -114,6 +119,8 @@ public class GameScreen implements Screen {
         // create the obstacles array and spawn the first obstacle
         obstacles = new Array<Rectangle>();
         brokenobstacles = new Array<Rectangle>();
+        powerups = new Array<Rectangle>();
+        spawnPowerup();
         spawnObstacle();
 
         part1Image = new Texture(Gdx.files.internal("part1bird.png"));
@@ -122,6 +129,9 @@ public class GameScreen implements Screen {
         part4Image = new Texture(Gdx.files.internal("part4bird.png"));
 
     }
+
+
+
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0.3f, 0.8f, 0.8f, 1);
@@ -328,6 +338,14 @@ public class GameScreen implements Screen {
         brokenpipe2.height = 230;
         brokenobstacles.add(brokenpipe2);
         lastObstacleTime2 = TimeUtils.nanoTime();
+    }
+
+    private void spawnPowerup() {
+        Rectangle powerup = new Rectangle();
+        powerup.width = 64;
+        powerup.height = 230;
+        powerups.add(powerup);
+
     }
 
 
