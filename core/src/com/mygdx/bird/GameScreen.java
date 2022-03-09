@@ -111,7 +111,8 @@ public class GameScreen implements Screen {
 
         pipeUpImage = new Texture(Gdx.files.internal("pipe_up.png"));
         pipeDownImage = new Texture(Gdx.files.internal("pipe_down.png"));
-        powerupImage = new Texture(Gdx.files.internal("part1bird.png"));
+        powerupImage = new Texture(Gdx.files.internal("marioestrella.png"));
+
 
         part1PipeUpImage = new Texture(Gdx.files.internal("brokenpipe1.png"));
         part2PipeUpImage = new Texture(Gdx.files.internal("brokenpipe2.png"));
@@ -164,6 +165,12 @@ public class GameScreen implements Screen {
             game.batch.draw(
                     i % 2 == 0 ? part1PipeUpImage : part2PipeUpImage,
                     brokenobstacles.get(i).x, brokenobstacles.get(i).y);
+        }
+
+        for(int i = 0; i < powerups.size; i++) {
+            game.batch.draw(
+                    i % 2 == 0 ? powerupImage : powerupImage,
+                    powerups.get(i).x, powerups.get(i).y);
         }
 
         game.font.draw(game.batch, "Score: " + (int)score, 10, 470);
@@ -226,7 +233,7 @@ public class GameScreen implements Screen {
         int i = 0;
         while (iter.hasNext()) {
             Rectangle tuberia = iter.next();
-            tuberia.x -= 200 * Gdx.graphics.getDeltaTime();
+            tuberia.x -= 250 * Gdx.graphics.getDeltaTime();
             if (tuberia.x < -64)
                 iter.remove();
             if (tuberia.overlaps(player)) {
@@ -264,6 +271,22 @@ public class GameScreen implements Screen {
             j++;
             }
             i++;
+        }
+
+
+        Iterator<Rectangle> poweriter = powerups.iterator();
+        int k = 0;
+        while (poweriter.hasNext()) {
+            Rectangle powerup = poweriter.next();
+            powerup.x = 205 ;
+            powerup.y = 480 / 2;
+           // powerup.x -= 250 * Gdx.graphics.getDeltaTime();
+            if (powerup.x < -64)
+                poweriter.remove();
+            if (powerup.overlaps(player)) {
+                    powerup.y -=600;
+            }
+        k++;
         }
 
 
@@ -342,10 +365,10 @@ public class GameScreen implements Screen {
 
     private void spawnPowerup() {
         Rectangle powerup = new Rectangle();
-        powerup.width = 64;
-        powerup.height = 230;
+        powerup.width = 34;
+        powerup.height = 34;
         powerups.add(powerup);
-
+        lastObstacleTime = TimeUtils.nanoTime();
     }
 
 
@@ -384,6 +407,7 @@ public class GameScreen implements Screen {
         backgroundImage.dispose();
         birdImage.dispose();
         pipeUpImage.dispose();
+        powerupImage.dispose();
         pipeDownImage.dispose();
         flapSound.dispose();
         failSound.dispose();
