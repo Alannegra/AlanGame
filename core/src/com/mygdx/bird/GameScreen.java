@@ -32,11 +32,17 @@ public class GameScreen implements Screen {
 
     long lastObstacleTime;
     long lastObstacleTime2;
+    long lastObstacleTime3;
 
     Rectangle player;
 
 
     Texture powerupImage;
+    Texture birdblueImage;
+    Texture birdredImage;
+    boolean vulnerabilidad;
+    boolean changecolor;
+
 
     float speedy;
     float gravity;
@@ -111,7 +117,9 @@ public class GameScreen implements Screen {
 
         pipeUpImage = new Texture(Gdx.files.internal("pipe_up.png"));
         pipeDownImage = new Texture(Gdx.files.internal("pipe_down.png"));
-        powerupImage = new Texture(Gdx.files.internal("marioestrella.png"));
+        powerupImage = new Texture(Gdx.files.internal("starmario50.png"));
+        birdblueImage = new Texture(Gdx.files.internal("birdred.png"));
+        birdredImage = new Texture(Gdx.files.internal("birdblue.png"));
 
 
         part1PipeUpImage = new Texture(Gdx.files.internal("brokenpipe1.png"));
@@ -129,6 +137,9 @@ public class GameScreen implements Screen {
         part3Image = new Texture(Gdx.files.internal("part3bird.png"));
         part4Image = new Texture(Gdx.files.internal("part4bird.png"));
 
+        vulnerabilidad = true;
+        changecolor = true;
+
     }
 
 
@@ -145,7 +156,20 @@ public class GameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(backgroundImage, 0, 0);
         if(!dead){
-            game.batch.draw(birdImage, player.x, player.y);
+            if(vulnerabilidad){
+                game.batch.draw(birdImage, player.x, player.y);
+            }else{
+                if(changecolor){
+                    game.batch.draw(birdblueImage, player.x, player.y);
+                    changecolor = false;
+                }else{
+                    game.batch.draw(birdredImage, player.x, player.y);
+
+                }
+
+
+            }
+
         }else{
             game.batch.draw(part1Image,part1.x,part1.y);
             game.batch.draw(part2Image,part2.x,part2.y);
@@ -211,11 +235,14 @@ public class GameScreen implements Screen {
         }
 
 
-
         // Comprova si cal generar un obstacle nou
         if (TimeUtils.nanoTime() - lastObstacleTime > 1500000000){
             spawnObstacle();
+            changecolor = true;
 
+        }
+        if (TimeUtils.nanoTime() - lastObstacleTime3 > 15000000000l){
+            spawnPowerup();
         }
 
         if (TimeUtils.nanoTime() - lastObstacleTime2 > 1490000000){
@@ -237,7 +264,11 @@ public class GameScreen implements Screen {
             if (tuberia.x < -64)
                 iter.remove();
             if (tuberia.overlaps(player)) {
-                dead = true;
+
+                if(vulnerabilidad){
+                    dead = true;
+                }
+
                 //pipeXposition = tuberia.x;
                 //pipeYposition = tuberia.y;
                 if(i % 2 !=0){
@@ -278,13 +309,15 @@ public class GameScreen implements Screen {
         int k = 0;
         while (poweriter.hasNext()) {
             Rectangle powerup = poweriter.next();
-            powerup.x = 205 ;
             powerup.y = 480 / 2;
-           // powerup.x -= 250 * Gdx.graphics.getDeltaTime();
+            powerup.x -= 5 ;
+            //tuberia.x -= 250 * Gdx.graphics.getDeltaTime();
             if (powerup.x < -64)
                 poweriter.remove();
             if (powerup.overlaps(player)) {
+                vulnerabilidad = false;
                     powerup.y -=600;
+                    poweriter.remove();
             }
         k++;
         }
@@ -367,8 +400,9 @@ public class GameScreen implements Screen {
         Rectangle powerup = new Rectangle();
         powerup.width = 34;
         powerup.height = 34;
+        powerup.x = 1050;
         powerups.add(powerup);
-        lastObstacleTime = TimeUtils.nanoTime();
+        lastObstacleTime3 = TimeUtils.nanoTime();
     }
 
 
