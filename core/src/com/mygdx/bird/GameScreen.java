@@ -33,6 +33,7 @@ public class GameScreen implements Screen {
     long lastObstacleTime;
     long lastObstacleTime2;
     long lastObstacleTime3;
+    long lastObstacleTime4;
 
     Rectangle player;
 
@@ -49,6 +50,7 @@ public class GameScreen implements Screen {
     boolean dead;
     boolean finaldead;
     boolean oneTime;
+    boolean subirbajar;
     float score;
 
     float pipeYposition;
@@ -139,6 +141,7 @@ public class GameScreen implements Screen {
 
         vulnerabilidad = true;
         changecolor = true;
+        subirbajar = true;
 
     }
 
@@ -229,7 +232,9 @@ public class GameScreen implements Screen {
         }*/
 
         if (player.y <  0) {
-            dead = true;
+            if(vulnerabilidad){
+                dead = true;
+            }
             player.y = 0;
             speedy = + speedy ;
         }
@@ -238,11 +243,23 @@ public class GameScreen implements Screen {
         // Comprova si cal generar un obstacle nou
         if (TimeUtils.nanoTime() - lastObstacleTime > 1500000000){
             spawnObstacle();
-            changecolor = true;
 
         }
+
+        if (TimeUtils.nanoTime() - lastObstacleTime > 500000000l){
+            changecolor = true;
+        }
+
         if (TimeUtils.nanoTime() - lastObstacleTime3 > 15000000000l){
             spawnPowerup();
+        }
+
+
+        if (TimeUtils.nanoTime() - lastObstacleTime4 > 10000000000L){
+            if(!vulnerabilidad){
+                vulnerabilidad = true;
+            }
+            //spawnPowerup();
         }
 
         if (TimeUtils.nanoTime() - lastObstacleTime2 > 1490000000){
@@ -309,7 +326,21 @@ public class GameScreen implements Screen {
         int k = 0;
         while (poweriter.hasNext()) {
             Rectangle powerup = poweriter.next();
-            powerup.y = 480 / 2;
+
+            if(powerup.y > 350){
+               subirbajar = true;
+
+            }else if(powerup.y < 150){
+               subirbajar = false;
+            }
+
+            if(subirbajar){
+                powerup.y -= 5;
+            }else {
+                powerup.y += 5;
+            }
+
+            //powerup.y = 480 / 2;
             powerup.x -= 5 ;
             //tuberia.x -= 250 * Gdx.graphics.getDeltaTime();
             if (powerup.x < -64)
@@ -318,6 +349,7 @@ public class GameScreen implements Screen {
                 vulnerabilidad = false;
                     powerup.y -=600;
                     poweriter.remove();
+                lastObstacleTime4 = TimeUtils.nanoTime();
             }
         k++;
         }
@@ -401,25 +433,12 @@ public class GameScreen implements Screen {
         powerup.width = 34;
         powerup.height = 34;
         powerup.x = 1050;
+        powerup.y = 480/2;
         powerups.add(powerup);
         lastObstacleTime3 = TimeUtils.nanoTime();
     }
 
 
-    public void spawnPart(float x,float y){
-       /* Rectangle part1 = new Rectangle();
-        Rectangle part2 = new Rectangle();
-        Rectangle part3 = new Rectangle();
-        Rectangle part4 = new Rectangle();
-
-        part1.x = x; part1.y = y;
-        part2.x = x; part2.y = y;
-        part3.x = x; part3.y = y;
-        part4.x = x; part4.y = y;*/
-
-        lastObstacleTime = TimeUtils.nanoTime();
-
-    }
 
     @Override
     public void resize(int width, int height) {
