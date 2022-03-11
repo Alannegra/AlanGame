@@ -23,6 +23,8 @@ public class GameScreen implements Screen {
     Sound flapSound;
     Sound failSound;
     Sound explosion1;
+    Sound starSong;
+    Sound crashsound;
 
     OrthographicCamera camera;
 
@@ -84,7 +86,8 @@ public class GameScreen implements Screen {
         flapSound = Gdx.audio.newSound(Gdx.files.internal("flap.wav"));
         failSound = Gdx.audio.newSound(Gdx.files.internal("fail.wav"));
         explosion1 = Gdx.audio.newSound(Gdx.files.internal("explosion1.wav"));
-
+        starSong = Gdx.audio.newSound(Gdx.files.internal("startotal.wav"));
+        crashsound = Gdx.audio.newSound(Gdx.files.internal("crash.wav"));
         // create a Rectangle to logically represent the player
         player = new Rectangle();
 
@@ -257,6 +260,7 @@ public class GameScreen implements Screen {
 
         if (TimeUtils.nanoTime() - lastObstacleTime4 > 10000000000L){
             if(!vulnerabilidad){
+                //starSong.dispose();
                 vulnerabilidad = true;
             }
             //spawnPowerup();
@@ -281,7 +285,7 @@ public class GameScreen implements Screen {
             if (tuberia.x < -64)
                 iter.remove();
             if (tuberia.overlaps(player)) {
-
+                crashsound.play();
                 if(vulnerabilidad){
                     dead = true;
                 }
@@ -346,6 +350,7 @@ public class GameScreen implements Screen {
             if (powerup.x < -64)
                 poweriter.remove();
             if (powerup.overlaps(player)) {
+                starSong.play();
                 vulnerabilidad = false;
                     powerup.y -=600;
                     poweriter.remove();
