@@ -2,6 +2,7 @@ package com.mygdx.bird;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,13 +24,13 @@ public class GameScreen implements Screen {
     Sound flapSound;
     Sound failSound;
     Sound explosion1;
-    Sound starSong;
+    Music starSong;
     Sound crashsound;
 
     OrthographicCamera camera;
 
     Array<Rectangle> obstacles;
-    Array<Rectangle> brokenobstacles;
+    Array<Rectangle> brokenobstacles,brokenobstacles2;
     Array<Rectangle> powerups;
 
     long lastObstacleTime;
@@ -71,6 +72,8 @@ public class GameScreen implements Screen {
 
     Texture part1PipeUpImage;
     Texture part2PipeUpImage;
+    Texture part1PipeDownImage;
+    Texture part2PipeDownImage;
 
     Rectangle part1pipe;
     Rectangle part2Pipe;
@@ -86,7 +89,7 @@ public class GameScreen implements Screen {
         flapSound = Gdx.audio.newSound(Gdx.files.internal("flap.wav"));
         failSound = Gdx.audio.newSound(Gdx.files.internal("fail.wav"));
         explosion1 = Gdx.audio.newSound(Gdx.files.internal("explosion1.wav"));
-        starSong = Gdx.audio.newSound(Gdx.files.internal("startotal.wav"));
+        starSong = Gdx.audio.newMusic(Gdx.files.internal("startotal.wav"));
         crashsound = Gdx.audio.newSound(Gdx.files.internal("crash.wav"));
         // create a Rectangle to logically represent the player
         player = new Rectangle();
@@ -129,10 +132,13 @@ public class GameScreen implements Screen {
 
         part1PipeUpImage = new Texture(Gdx.files.internal("brokenpipe1.png"));
         part2PipeUpImage = new Texture(Gdx.files.internal("brokenpipe2.png"));
+        part1PipeDownImage = new Texture(Gdx.files.internal("brokenpipe3.png"));
+        part2PipeDownImage = new Texture(Gdx.files.internal("brokenpipe4.png"));
 
         // create the obstacles array and spawn the first obstacle
         obstacles = new Array<Rectangle>();
         brokenobstacles = new Array<Rectangle>();
+        brokenobstacles2 = new Array<Rectangle>();
         powerups = new Array<Rectangle>();
         spawnPowerup();
         spawnObstacle();
@@ -197,6 +203,12 @@ public class GameScreen implements Screen {
                     brokenobstacles.get(i).x, brokenobstacles.get(i).y);
         }
 
+        for(int i = 0; i < brokenobstacles2.size; i++) {
+            game.batch.draw(
+                    i % 2 == 0 ? part1PipeDownImage : part2PipeDownImage,
+                    brokenobstacles2.get(i).x, brokenobstacles2.get(i).y);
+        }
+
         for(int i = 0; i < powerups.size; i++) {
             game.batch.draw(
                     i % 2 == 0 ? powerupImage : powerupImage,
@@ -247,6 +259,7 @@ public class GameScreen implements Screen {
         if (TimeUtils.nanoTime() - lastObstacleTime > 1500000000){
             spawnObstacle();
 
+
         }
 
         if (TimeUtils.nanoTime() - lastObstacleTime > 500000000l){
@@ -260,7 +273,7 @@ public class GameScreen implements Screen {
 
         if (TimeUtils.nanoTime() - lastObstacleTime4 > 10000000000L){
             if(!vulnerabilidad){
-                //starSong.dispose();
+                starSong.stop();
                 vulnerabilidad = true;
             }
             //spawnPowerup();
@@ -296,8 +309,8 @@ public class GameScreen implements Screen {
                     spawnBrokenObstacle(tuberia.x,tuberia.y);
                     tuberia.y -=600;
                 }else{
-                    //spawnBrokenObstacle(tuberia.x,tuberia.y);
-                    //tuberia.y -=600;
+                    spawnBrokenObstacle2(tuberia.x,tuberia.y);
+                    tuberia.y -=600;
                 }
 
             }
@@ -321,6 +334,24 @@ public class GameScreen implements Screen {
                     tuberiarota.y -= 0.5;
                 }
             j++;
+            }
+
+            Iterator<Rectangle> brokeniter2 = brokenobstacles2.iterator();
+            int k = 0;
+
+            while (brokeniter2.hasNext()){
+                Rectangle tuberiarota = brokeniter2.next();
+                //tuberiarota.y = pipeYposition - 100;
+                if(k % 2 ==0){
+                    //tuberiarota.x = pipeXposition;
+                    //tuberiarota.y = pipeYposition;
+                    tuberiarota.x += 0.5;
+                    tuberiarota.y -= 0.5;
+                }else{
+                    tuberiarota.x += 0.5;
+                    tuberiarota.y += 0.5;
+                }
+                k++;
             }
             i++;
         }
@@ -433,6 +464,25 @@ public class GameScreen implements Screen {
         lastObstacleTime2 = TimeUtils.nanoTime();
     }
 
+    private void spawnBrokenObstacle2(float x , float y){
+        // Calcula la alçada de l'obstacle aleatòriament
+        //float holey = MathUtils.random(50, 230);
+        // Crea dos obstacles: Una tubería superior i una inferior
+        Rectangle brokenpipe1 = new Rectangle();
+        brokenpipe1.x = x;
+        brokenpipe1.y =  y;
+        brokenpipe1.width = 64;
+        brokenpipe1.height = 230;
+        brokenobstacles2.add(brokenpipe1);
+        Rectangle brokenpipe2 = new Rectangle();
+        brokenpipe2.x = x;
+        brokenpipe2.y = y - 20;
+        brokenpipe2.width = 64;
+        brokenpipe2.height = 230;
+        brokenobstacles2.add(brokenpipe2);
+        lastObstacleTime2 = TimeUtils.nanoTime();
+    }
+
     private void spawnPowerup() {
         Rectangle powerup = new Rectangle();
         powerup.width = 34;
@@ -442,6 +492,10 @@ public class GameScreen implements Screen {
         powerups.add(powerup);
         lastObstacleTime3 = TimeUtils.nanoTime();
     }
+
+
+
+
 
 
 
